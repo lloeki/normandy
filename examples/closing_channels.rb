@@ -10,8 +10,6 @@ go lambda {
     begin
       j = jobs.recv
     rescue Channel::Closed
-      # TODO: wrong! ends before all items recv'd
-      # j, more := <-jobs; more == True
       puts 'received all jobs'
       done << true
       return
@@ -21,7 +19,7 @@ go lambda {
   end
 }
 
-3.times do |j|
+1.upto 3 do |j|
   jobs << j
   puts "sent job #{j}"
 end

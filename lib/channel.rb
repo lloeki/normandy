@@ -1,11 +1,3 @@
-require 'thread'
-
-module Kernel
-  def go(prc, *args)
-    Thread.new { prc.call(*args) }
-  end
-end
-
 class Channel
   class Closed < StandardError; end
 
@@ -41,7 +33,7 @@ class Channel
   def recv
     lock! do
       loop do
-        closed! if closed?
+        closed! if closed? && @q.empty?
         wait! && next if @q.empty?
         break @q.pop
       end
@@ -75,6 +67,30 @@ class Channel
     fail Closed
   end
 
+  def each
+    return enum_for(:each) unless block_given?
+
+    loop do
+      begin
+        e = recv
+      rescue Channel::Closed
+        return
+      else
+        yield e
+      end
+    end
+  end
+
+  def receive_only!
+    ReceiveOnly.new(self)
+  end
+  alias_method :r!, :receive_only!
+
+  def send_only!
+    SendOnly.new(self)
+  end
+  alias_method :s!, :send_only!
+
   class << self
     def select(*channels)
       selector = new
@@ -87,4 +103,87 @@ class Channel
       threads.each(&:kill).each(&:join)
     end
   end
+
+  class Direction < StandardError; end
+  class Conversion < StandardError; end
+
+  class ReceiveOnly
+    def initialize(channel)
+      @channel = channel
+    end
+
+    def recv
+      @channel.recv
+    end
+    alias_method :pop, :recv
+
+    def send(_)
+      fail Direction, 'receive only'
+    end
+    alias_method :push, :send
+    alias_method :<<, :push
+
+    def close
+      @channel.close
+    end
+
+    def closed?
+      @channel.closed?
+    end
+
+    def receive_only!
+      self
+    end
+    alias_method :r!, :receive_only!
+
+    def send_only!
+      fail Conversion, 'receive only'
+    end
+    alias_method :s!, :send_only!
+
+    def hash
+      @channel.hash
+    end
+  end
+
+  class SendOnly
+    def initialize(channel)
+      @channel = channel
+    end
+
+    def recv
+      fail Direction, 'send only'
+    end
+    alias_method :pop, :recv
+
+    def send(val)
+      @channel.send(val)
+    end
+    alias_method :push, :send
+    alias_method :<<, :push
+
+    def close
+      @channel.close
+    end
+
+    def closed?
+      @channel.closed?
+    end
+
+    def receive_only!
+      fail Conversion, 'send only'
+    end
+    alias_method :r!, :receive_only!
+
+    def send_only!
+      self
+    end
+    alias_method :s!, :send_only!
+
+    def hash
+      @channel.hash
+    end
+  end
 end
+
+require 'channel/runtime'

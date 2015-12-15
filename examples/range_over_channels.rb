@@ -5,6 +5,6 @@ require 'channel'
 queue = Channel.new(2)
 queue << 'one'
 queue << 'two'
-close(queue)
+queue.close
 
 queue.each { |e| puts e }

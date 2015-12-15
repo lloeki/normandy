@@ -4,6 +4,7 @@ require 'channel'
 
 # rubocop:disable Metrics/AbcSize
 # rubocop:disable Metrics/MethodLength
+# rubocop:disable Metrics/ClassLength
 
 class TestChannel < Test::Unit::TestCase
   module Util
@@ -40,6 +41,16 @@ class TestChannel < Test::Unit::TestCase
     assert_raise(Channel::Closed) { c.recv }
   end
 
+  def test_buffered_channel
+    messages = Channel.new(2)
+
+    messages << 'buffered'
+    messages << 'channel'
+
+    assert_equal('buffered', messages.recv)
+    assert_equal('channel',  messages.recv)
+  end
+
   # def test_fail_send_to_unbuffered_channel
   #   c = Channel.new
   #   assert_raise_with_message(ThreadError, /No live threads left/) do
@@ -73,7 +84,7 @@ class TestChannel < Test::Unit::TestCase
     assert_raise(Channel::Closed) { c << 'foo' }
   end
 
-  def test_close_blocking_channel
+  def test_receive_on_closed_blocking_channel
     c = Channel.new
     meanwhile(-> { assert_raise(Channel::Closed) { c.recv } }) do
       sleep(0.1)
@@ -82,7 +93,7 @@ class TestChannel < Test::Unit::TestCase
     assert_equal(true, c.closed?)
   end
 
-  def test_close_blocking_channels
+  def test_many_receive_on_closed_blocking_channel
     c = Channel.new
     meanwhile(
       -> { assert_raise(Channel::Closed) { c.recv } },
@@ -94,6 +105,41 @@ class TestChannel < Test::Unit::TestCase
     end
     assert_equal(true, c.closed?)
   end
+
+  def test_receive_and_close_buffered_channel
+    c = Channel.new(5)
+    meanwhile(
+      -> { sleep 0.1; assert_equal(1, c.recv) },
+      -> { sleep 0.2; assert_equal(2, c.recv) },
+      -> { sleep 0.3; assert_equal(3, c.recv) },
+      -> { sleep 0.4; assert_raise(Channel::Closed) { c.recv } },
+    ) do
+      c << 1
+      c << 2
+      c << 3
+      c.close
+    end
+    assert_equal(true, c.closed?)
+  end
+
+  def test_iterate_over_buffered_channel
+    c = Channel.new(2)
+    c << 1
+    c << 2
+    c.close
+
+    assert_equal([1, 2], c.each.to_a)
+  end
+
+  # def test_iterate_over_unclosed_buffered_channel
+  #   c = Channel.new(2)
+  #   c << 1
+  #   c << 2
+
+  #   assert_raise_with_message('ThreadError', /No live threads left/) do
+  #     c.each.to_a
+  #   end
+  # end
 
   def test_select
     c1 = Channel.new
@@ -116,15 +162,5 @@ class TestChannel < Test::Unit::TestCase
         end
       end
     end
-  end
-
-  def test_buffered_channel
-    messages = Channel.new(2)
-
-    messages << 'buffered'
-    messages << 'channel'
-
-    assert_equal('buffered', messages.recv)
-    assert_equal('channel',  messages.recv)
   end
 end

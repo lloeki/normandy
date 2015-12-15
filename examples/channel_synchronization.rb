@@ -3,7 +3,7 @@
 require 'channel'
 
 def worker(done)
-  puts 'working...'
+  $stdout.write 'working...'
   sleep 1
   puts 'done'
   done << true

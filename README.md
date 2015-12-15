@@ -25,6 +25,16 @@ To prove this point and to serve as a nice tutorial anyway, some examples
 ported over from [Go by example](http://gobyexample.com) are included in
 [examples](examples).
 
+- [X] channels
+- [X] channel buffering
+- [X] channel synchronization
+- [X] channel direction
+- [X] select
+- [X] timeouts
+- [ ] non-block channel operations
+- [X] closing channels
+- [X] range over channels
+
 ## License
 
 MIT

@@ -3,10 +3,13 @@
 require 'channel'
 
 def ping(pings, msg)
+  pings = pings.send_only!
   pings << msg
 end
 
 def pong(pings, pongs)
+  pings = pings.receive_only!
+  pongs = pongs.send_only!
   msg = pings.recv
   pongs << msg
 end
