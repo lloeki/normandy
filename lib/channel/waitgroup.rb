@@ -5,16 +5,19 @@ class WaitGroup
     @waiting = []
   end
 
-  def add(count)
-    sync! { @count += count }
+  def add(delta)
+    sync! do
+      @count += delta
+      fail 'negative WaitGroup counter' if @count < 0
+      if @waiting.any? && delta > 0 && @count == delta
+        fail 'misuse: add called concurrently with wait'
+      end
+      wake!
+    end
   end
 
   def done
-    sync! do
-      fail 'negative count' if done?
-      @count -= 1
-      wake!
-    end
+    add(-1)
   end
 
   private def done?

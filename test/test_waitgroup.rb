@@ -2,6 +2,9 @@ require 'test/unit'
 require 'thread'
 require 'channel/waitgroup'
 
+# rubocop:disable Metrics/AbcSize
+# rubocop:disable Metrics/MethodLength
+
 class TestWaitGroup < Test::Unit::TestCase
   module Util
     def meanwhile(*procs, &blk)
@@ -24,27 +27,25 @@ class TestWaitGroup < Test::Unit::TestCase
   def test_waitgroup
     Time.now.tap do |start|
       wg = WaitGroup.new
-      wg.add(5)
+      wg.add(2)
       ok1 = false
       ok2 = false
-      ok3 = false
-      ok4 = false
-      ok5 = false
-      go -> { sleep 0.1; ok1 = true; wg.done }
-      go -> { sleep 0.2; ok2 = true; wg.done }
-      go -> { sleep 0.3; ok3 = true; wg.done }
-      go -> { sleep 0.4; ok4 = true; wg.done }
-      go -> { sleep 0.5; ok5 = true; wg.done }
+      go -> { sleep 0.3; ok1 = true; wg.done }
+      go -> { sleep 0.5; ok2 = true; wg.done }
       wg.wait
       duration = Time.now - start
-      assert_equal(true, duration > 0.45)
-      assert_equal(true, duration < 0.70)
+      assert_equal(true, duration > 0.48)
+      assert_equal(true, duration < 0.52)
       assert_true(ok1)
       assert_true(ok2)
-      assert_true(ok3)
-      assert_true(ok4)
-      assert_true(ok5)
       assert_raises(RuntimeError) { wg.done }
     end
+  end
+
+  def test_waitgroup_concurrent_add
+    wg = WaitGroup.new
+    go -> { wg.wait }
+    sleep 0.1
+    assert_raises(RuntimeError) { wg.add(1) }
   end
 end
