@@ -1,13 +1,13 @@
 Gem::Specification.new do |s|
-  s.name        = 'channel'
+  s.name        = 'normandy'
   s.version     = '0.1.0'
   s.licenses    = ['MIT']
-  s.summary     = 'Channels'
+  s.summary     = 'Channels, CSP style'
   s.description = 'Share memory by communicating'
   s.authors     = ['Loic Nageleisen']
   s.email       = 'loic.nageleisen@gmail.com'
-  s.files       = ['lib/channel.rb']
-  s.homepage    = 'https://github.com/lloeki/channel'
+  s.files       = ['lib/**/*.rb']
+  s.homepage    = 'https://github.com/lloeki/normandy'
 
   s.add_development_dependency 'pry'
   s.add_development_dependency 'rubocop'
