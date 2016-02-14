@@ -8,15 +8,15 @@ w = WaitGroup.new
 w.add(5)
 
 1.upto(5) do |i|
-  go(lambda { |i, ci|
-      j = 1
-      ci.each { |v|
-        sleep(0.001)
-        puts format("%d.%d got %d", i, j, v)
-        j += 1
-      }
-      w.done
-  }, i, c)
+  go(lambda do |i, ci|
+    j = 1
+    ci.each do |v|
+      sleep(0.001)
+      puts format('%d.%d got %d', i, j, v)
+      j += 1
+    end
+    w.done
+  end, i, c)
 end
 
 1.upto(25) { |i| c << i }

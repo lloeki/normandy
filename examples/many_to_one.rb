@@ -5,11 +5,11 @@ require 'channel'
 c = Channel.new
 
 1.upto(5) do |i|
-  go(lambda { |i, co|
+  go(lambda do |i, co|
     1.upto(5) do |j|
-        co << format("hi from %d.%d", i, j)
+      co << format('hi from %d.%d', i, j)
     end
-  }, i, c)
+  end, i, c)
 end
 
 25.times { puts c.recv }

@@ -8,9 +8,9 @@ require 'channel'
 
 class TestChannel < Test::Unit::TestCase
   module Util
-    def meanwhile(*procs, &blk)
+    def meanwhile(*procs)
       threads = procs.map { |p| Thread.new(&p) }
-      blk.call
+      yield
       threads.each(&:join)
     end
   end

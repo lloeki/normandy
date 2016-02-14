@@ -1,3 +1,6 @@
+AllCops:
+  TargetRubyVersion: 2.0
+
 Style/Documentation:
   Enabled: false
 
@@ -7,5 +10,25 @@ Style/FileName:
 Style/Semicolon:
   AllowAsExpressionSeparator: true
 
-Style/TrailingComma:
+Style/TrailingCommaInLiteral:
   EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: comma
+
+Style/SignalException:
+  EnforcedStyle: semantic
+
+Style/ClassAndModuleChildren:
+  EnforcedStyle: compact
+
+Style/TrivialAccessors:
+  AllowPredicates: true
+
+Style/Alias:
+  EnforcedStyle: prefer_alias_method
+
+Lint/ShadowingOuterLocalVariable:
+  Exclude:
+    - examples/many_to_one.rb
+    - examples/one_to_many.rb

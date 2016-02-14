@@ -12,14 +12,14 @@ Channel.select(messages) do |msg, c|
   end
 end
 
-msg = 'hi'
-messages <- msg
-#select {
-#case messages <- msg:
-#    fmt.Println("sent message", msg)
-#default:
-#    fmt.Println("no message sent")
-#}
+# msg = 'hi'
+# messages <- msg
+# select {
+# case messages <- msg:
+#     fmt.Println("sent message", msg)
+# default:
+#     fmt.Println("no message sent")
+# }
 
 Channel.select(messages, signals) do |res, c|
   case c
