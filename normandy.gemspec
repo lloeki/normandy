@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.description = 'Share memory by communicating'
   s.authors     = ['Loic Nageleisen']
   s.email       = 'loic.nageleisen@gmail.com'
-  s.files       = ['lib/**/*.rb']
+  s.files       = Dir['lib/**/*.rb']
   s.homepage    = 'https://github.com/lloeki/normandy'
 
   s.add_development_dependency 'pry'

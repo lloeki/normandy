@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    channel (0.1.0)
+    normandy (0.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -36,11 +36,11 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  channel!
+  normandy!
   pry
   rake
   rubocop
   test-unit
 
 BUNDLED WITH
-   1.10.6
+   1.11.2
